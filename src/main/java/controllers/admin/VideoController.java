@@ -42,6 +42,14 @@ public class VideoController extends HttpServlet {
             Category cate = cateS.findById(Integer.parseInt(categoryid));
             req.setAttribute("category", cate);
             req.getRequestDispatcher("/views/admin/video_add.jsp").forward(req, resp);
+        } else if(url.contains("edit")) {
+            String videoid = req.getParameter("id");
+            req.setAttribute("catid",categoryid);
+            Category cate = cateS.findById(Integer.parseInt(categoryid));
+            req.setAttribute("category", cate);
+            Video vid = videoService.findById(videoid);
+            req.setAttribute("vId",vid);
+            req.getRequestDispatcher("/views/admin/video_edit.jsp").forward(req, resp);
         }
     }
 
@@ -90,16 +98,56 @@ public class VideoController extends HttpServlet {
                     //ghi ten file vao data
                     video.setPoster(fname);
                 }
-                else{
-                    video.setPoster("apple-apple-iphone.gif");
-                }
-
+                else { video.setPoster("apple-apple-iphone.gif"); }
             }
             catch (Exception e){
                 e.printStackTrace();
             }
 
             videoService.insert(video);
+            resp.sendRedirect(req.getContextPath() + "/admin/videos?id=" + categoryid);
+        } else if (url.contains("update")) {
+            String id = req.getParameter("cateID");
+            Category cate = cateS.findById(Integer.parseInt(id));
+            String videoID = req.getParameter("videoid");
+            int active = Integer.parseInt(req.getParameter("active"));
+            int views = Integer.parseInt(req.getParameter("views"));
+
+            Video vi = new Video();
+            vi.setCategory(cate);
+            vi.setVideoId(videoID);
+            vi.setDescription(req.getParameter("description"));
+            vi.setTitle(req.getParameter("title"));
+            vi.setViews(views);
+            vi.setActive(active);
+
+            String fname = "";
+            String uploadPath = Constant.UPLOAD_DIRECTORY;
+            File uploadDir = new File(uploadPath);
+            if(!uploadDir.exists()){
+                uploadDir.mkdir();
+            }
+            try{
+                Part part = req.getPart("images");
+                if (part.getSize() > 0) {
+                    String fileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
+                    //Doi ten file
+                    int index = fileName.lastIndexOf(".");
+                    String ext = fileName.substring(index + 1);
+                    fname = System.currentTimeMillis() + "." + ext;
+                    //upload file
+                    part.write(uploadPath + "/" + fname);
+                    //ghi ten file vao data
+                    vi.setPoster(fname);
+                }
+                else{
+                    vi.setPoster("apple-apple-iphone.gif");
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+            videoService.update(vi);
             resp.sendRedirect(req.getContextPath() + "/admin/videos?id=" + categoryid);
         }
     }
