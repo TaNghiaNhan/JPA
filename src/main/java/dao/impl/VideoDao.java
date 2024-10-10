@@ -99,13 +99,7 @@ public class VideoDao implements IVideoDao {
     public List<Video> findListById(String categoryId) {
         EntityManager enma = JPAConfig.getEntityManager();
         TypedQuery<Video> query = enma.createQuery("SELECT v FROM Video v WHERE v.category.categoryID = :cateId", Video.class);
-        /*
-        * Cái Video là tên class
-        * v.category.categoryID v. tên class entity á. atttribute
-        * này biến truyền vào cateId trùng với cái này query.setParameter("cateId" set giá trị Integer.parseInt(categoryId)
-        * */
-        query.setParameter("cateId", Integer.parseInt(categoryId)); // Chuyển đổi categoryId từ String sang int
-        return query.getResultList(); // Trả về danh sách video theo categoryId
+        query.setParameter("cateId", Integer.parseInt(categoryId));
+        return query.getResultList();
     }
-
 }

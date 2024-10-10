@@ -16,8 +16,10 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
-@WebServlet(urlPatterns = {"/admin/categories", "/admin/category/add", "/admin/category/insert",
-        "/admin/category/edit" ,"/admin/category/update","/admin/category/delete"})
+@WebServlet(urlPatterns = {"/admin/categories",
+        "/admin/category/add", "/admin/category/insert",
+        "/admin/category/edit" ,"/admin/category/update",
+        "/admin/category/delete"})
 
 public class CategoryController extends HttpServlet {
 

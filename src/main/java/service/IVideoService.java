@@ -7,7 +7,7 @@ public interface IVideoService {
 
     void insert(Video video);
     void delete(Video video) throws Exception;
-    void ppdate(Video video);
+    void update(Video video);
     Video findById(String id);
     List<Video> findAll();
     List<Video> findListById(String id);

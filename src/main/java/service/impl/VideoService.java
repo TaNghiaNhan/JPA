@@ -33,7 +33,7 @@ public class VideoService implements IVideoService {
     }
 
     @Override
-    public void ppdate(Video video) {
+    public void update(Video video) {
         Video vid = videoDao.findById(video.getVideoId());
         if(vid!=null){
             videoDao.update(video);
