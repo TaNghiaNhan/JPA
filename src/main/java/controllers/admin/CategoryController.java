@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
-@WebServlet(urlPatterns = {"/admin/categories", "/admin/category/add", "/admin/category/insert"})
+@WebServlet(urlPatterns = {"/admin/categories", "/admin/category/add", "/admin/category/insert",
+        "/admin/category/edit" ,"/admin/category/update"})
+
 public class CategoryController extends HttpServlet {
 
     ICategoryService cateService = new CategoryService();
@@ -33,6 +35,11 @@ public class CategoryController extends HttpServlet {
             req.getRequestDispatcher("/views/admin/category_list.jsp").forward(req, resp);
         } else if (url.contains("add")) {
             req.getRequestDispatcher("/views/admin/category_add.jsp").forward(req, resp);
+        } else if (url.contains("edit")) {
+            int id = Integer.parseInt(req.getParameter("id"));
+            Category cate = cateService.findById(id);
+            req.setAttribute("cate", cate);
+            req.getRequestDispatcher("/views/admin/category_update.jsp").forward(req, resp);
         }
     }
 
@@ -77,6 +84,45 @@ public class CategoryController extends HttpServlet {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+            resp.sendRedirect(req.getContextPath() + "/admin/categories");
+        }
+        else if (url.contains("update")) {
+            String id = req.getParameter("categoryID");
+            String categoryName = req.getParameter("categoryname");
+            String status = req.getParameter("status");
+            int statuss = Integer.parseInt(status);
+            Category cate = new Category();
+            cate.setCategoryname(categoryName);
+            cate.setCategoryID(Integer.parseInt(id));
+            cate.setStatus(statuss);
+            String fname = "";
+            String uploadPath = Constant.UPLOAD_DIRECTORY;
+            File uploadDir = new File(uploadPath);
+            if(!uploadDir.exists()){
+                uploadDir.mkdir();
+            }
+            try{
+                Part part = req.getPart("images");
+                if (part.getSize() > 0) {
+                    String fileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
+                    //Doi ten file
+                    int index = fileName.lastIndexOf(".");
+                    String ext = fileName.substring(index + 1);
+                    fname = System.currentTimeMillis() + "." + ext;
+                    //upload file
+                    part.write(uploadPath + "/" + fname);
+                    //ghi ten file vao data
+                    cate.setImages(fname);
+                }
+                else{
+                    cate.setImages("Samsung.jpg");
+                }
+
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+            cateService.update(cate);
             resp.sendRedirect(req.getContextPath() + "/admin/categories");
         }
     }
