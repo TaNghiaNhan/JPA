@@ -2,7 +2,6 @@ package service.impl;
 
 import dao.impl.CategoryDao;
 import entity.Category;
-import entity.Video;
 import service.ICategoryService;
 
 
@@ -48,7 +47,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public void insert(Category category) {
+    public void insert(Category category) throws Exception {
         dao.insert(category);
     }
 }

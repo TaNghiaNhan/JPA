@@ -18,5 +18,5 @@ public interface ICategoryDao {
 
     void update(Category category);
 
-    void insert(Category category);
+    void insert(Category category) throws Exception;
 }

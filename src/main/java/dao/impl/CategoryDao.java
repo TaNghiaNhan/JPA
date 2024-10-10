@@ -12,19 +12,30 @@ import java.util.List;
 public class CategoryDao implements ICategoryDao{
 
     @Override
-    public void insert(Category category) {
+    public void insert(Category category) throws Exception {
         EntityManager enma = JPAConfig.getEntityManager();
         EntityTransaction trans = enma.getTransaction();
+
         try {
             trans.begin();
-            enma.persist(category);
+            if (category != null) {
+                // Hợp nhất vào EntityManager nếu cần
+                category = enma.merge(category);
+                enma.remove(category);
+            } else {
+                throw new Exception("Không tìm thấy danh mục");
+            }
             trans.commit();
         } catch (Exception e) {
             e.printStackTrace();
-            trans.rollback();
+            if (trans.isActive()) {
+                trans.rollback();
+            }
             throw e;
         } finally {
-            enma.close();
+            if (enma.isOpen()) {
+                enma.close();
+            }
         }
     }
 

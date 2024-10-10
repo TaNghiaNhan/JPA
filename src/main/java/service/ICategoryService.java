@@ -11,6 +11,6 @@ public interface ICategoryService {
     Category findById(int cateid);
     void delete(int cateid) throws Exception;
     void update(Category category);
-    void insert(Category category);
+    void insert(Category category) throws Exception;
 
 }
