@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @WebServlet(urlPatterns = {"/admin/categories", "/admin/category/add", "/admin/category/insert",
-        "/admin/category/edit" ,"/admin/category/update"})
+        "/admin/category/edit" ,"/admin/category/update","/admin/category/delete"})
 
 public class CategoryController extends HttpServlet {
 
@@ -40,6 +40,20 @@ public class CategoryController extends HttpServlet {
             Category cate = cateService.findById(id);
             req.setAttribute("cate", cate);
             req.getRequestDispatcher("/views/admin/category_update.jsp").forward(req, resp);
+        } else if (url.contains("delete")) {
+            int id = Integer.parseInt(req.getParameter("id"));
+            try {
+                // Tìm lại thực thể trước khi xóa
+                Category cate = cateService.findById(id);
+                if (cate != null) {
+                    cateService.delete(cate.getCategoryID());
+                } else {
+                    throw new Exception("Không tìm thấy danh mục với ID: " + id);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            resp.sendRedirect(req.getContextPath() + "/admin/categories");
         }
     }
 
