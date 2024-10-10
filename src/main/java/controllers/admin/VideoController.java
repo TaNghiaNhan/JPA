@@ -50,6 +50,15 @@ public class VideoController extends HttpServlet {
             Video vid = videoService.findById(videoid);
             req.setAttribute("vId",vid);
             req.getRequestDispatcher("/views/admin/video_edit.jsp").forward(req, resp);
+        } else if (url.contains("delete")){
+            String id = req.getParameter("id");
+            Video video = videoService.findById(id);
+            try {
+                videoService.delete(video);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            resp.sendRedirect(req.getContextPath() + "/admin/videos?id=" + categoryid);
         }
     }
 
@@ -140,9 +149,7 @@ public class VideoController extends HttpServlet {
                     //ghi ten file vao data
                     vi.setPoster(fname);
                 }
-                else{
-                    vi.setPoster("apple-apple-iphone.gif");
-                }
+                else {vi.setPoster("apple-apple-iphone.gif"); }
             }
             catch (Exception e){
                 e.printStackTrace();
