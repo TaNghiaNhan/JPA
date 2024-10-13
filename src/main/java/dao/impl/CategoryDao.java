@@ -7,32 +7,36 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
+import service.impl.CategoryService;
+
 import java.util.List;
 
 public class CategoryDao implements ICategoryDao{
 
     @Override
     public void insert(Category category) throws Exception {
+        // Tạo EntityManager từ cấu hình JPA
         EntityManager enma = JPAConfig.getEntityManager();
         EntityTransaction trans = enma.getTransaction();
 
         try {
+            // Bắt đầu giao dịch
             trans.begin();
-            if (category != null) {
-                // Hợp nhất vào EntityManager nếu cần
-                category = enma.merge(category);
-                enma.remove(category);
-            } else {
-                throw new Exception("Không tìm thấy danh mục");
-            }
+            enma.persist(category);
             trans.commit();
         } catch (Exception e) {
+            // Xử lý lỗi
             e.printStackTrace();
+
+            // Cuối cùng, hoàn tác giao dịch nếu có lỗi
             if (trans.isActive()) {
                 trans.rollback();
             }
+
+            // Ném lại ngoại lệ để thông báo lỗi
             throw e;
         } finally {
+            // Đóng EntityManager
             if (enma.isOpen()) {
                 enma.close();
             }
@@ -40,18 +44,30 @@ public class CategoryDao implements ICategoryDao{
     }
 
     public void update(Category category) {
+        // Tạo EntityManager từ cấu hình JPA
         EntityManager enma = JPAConfig.getEntityManager();
         EntityTransaction trans = enma.getTransaction();
         try {
+            // Bắt đầu giao dịch
             trans.begin();
+            // Sử dụng merge để cập nhật đối tượng vào cơ sở dữ liệu
             enma.merge(category);
+            // Cam kết giao dịch
             trans.commit();
         } catch (Exception e) {
+            // Xử lý lỗi
             e.printStackTrace();
-            trans.rollback();
+            // Hoàn tác giao dịch nếu có lỗi
+            if (trans.isActive()) {
+                trans.rollback();
+            }
+            // Ném lại ngoại lệ để thông báo lỗi
             throw e;
         } finally {
-            enma.close();
+            // Đóng EntityManager
+            if (enma.isOpen()) {
+                enma.close();
+            }
         }
     }
 

@@ -50,4 +50,17 @@ public class CategoryService implements ICategoryService {
     public void insert(Category category) throws Exception {
         dao.insert(category);
     }
+
+    public static void main(String[] args) {
+        CategoryService service = new CategoryService();
+        Category category = new Category();
+        category.setCategoryname("Iphone14ProMax");
+        category.setImages("Iphone14ProMax.jpg");
+        category.setStatus(0);
+        try {
+            service.insert(category);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

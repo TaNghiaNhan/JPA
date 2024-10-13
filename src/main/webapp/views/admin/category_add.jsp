@@ -5,7 +5,7 @@
   Time: 8:28 PM
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@page contentType="text/html;charset=UTF-8" language="java"%>
 <form action="${pageContext.request.contextPath}/admin/category/insert" method="post" enctype="multipart/form-data">
     <label for="categoryname">Category Name: </label><br>
     <input type="text" id="categoryname" name="categoryname"><br>

@@ -2,6 +2,7 @@ package controllers.admin;
 
 import entity.Category;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
+@MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5 * 5)
 @WebServlet(urlPatterns = {"/admin/categories",
         "/admin/category/add", "/admin/category/insert",
         "/admin/category/edit" ,"/admin/category/update",
@@ -29,8 +31,8 @@ public class CategoryController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
         resp.setCharacterEncoding("UTF-8");
-
         String url = req.getRequestURI();
+
         if (url.contains("/admin/categories")) {
             List<Category> list = cateService.findAll();
             req.setAttribute("listcate", list);
@@ -66,6 +68,8 @@ public class CategoryController extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
 
         if (url.contains("insert")) {
+            System.out.println(req.getParameter("categoryname"));
+            System.out.println(req.getParameter("status"));
             String categoryName = req.getParameter("categoryname");
             int status = Integer.parseInt(req.getParameter("status"));
 
@@ -95,11 +99,13 @@ public class CategoryController extends HttpServlet {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
             try {
                 cateService.insert(cate);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+
             resp.sendRedirect(req.getContextPath() + "/admin/categories");
         }
         else if (url.contains("update")) {
@@ -111,34 +117,36 @@ public class CategoryController extends HttpServlet {
             cate.setCategoryname(categoryName);
             cate.setCategoryID(Integer.parseInt(id));
             cate.setStatus(statuss);
-            String fname = "";
             String uploadPath = Constant.UPLOAD_DIRECTORY;
             File uploadDir = new File(uploadPath);
-            if(!uploadDir.exists()){
+            if (!uploadDir.exists()) {
                 uploadDir.mkdir();
             }
-            try{
+            try {
                 Part part = req.getPart("images");
                 if (part.getSize() > 0) {
                     String fileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
                     //Doi ten file
                     int index = fileName.lastIndexOf(".");
                     String ext = fileName.substring(index + 1);
-                    fname = System.currentTimeMillis() + "." + ext;
+                    String fname = System.currentTimeMillis() + "." + ext;
                     //upload file
                     part.write(uploadPath + "/" + fname);
                     //ghi ten file vao data
                     cate.setImages(fname);
-                }
-                else{
+                } else {
                     cate.setImages("Samsung.jpg");
                 }
-
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            cateService.update(cate);
+
+            try {
+                cateService.update(cate);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
             resp.sendRedirect(req.getContextPath() + "/admin/categories");
         }
     }
