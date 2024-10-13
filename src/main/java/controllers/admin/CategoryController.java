@@ -146,7 +146,6 @@ public class CategoryController extends HttpServlet {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-
             resp.sendRedirect(req.getContextPath() + "/admin/categories");
         }
     }

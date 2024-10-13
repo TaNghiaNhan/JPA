@@ -7,6 +7,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.Part;
 import org.apache.taglibs.standard.lang.jstl.Constants;
 import service.IVideoService;
@@ -19,7 +20,12 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
-@WebServlet(urlPatterns = {"/admin/videos"})
+@MultipartConfig(fileSizeThreshold= 1024 * 1024, maxFileSize= 1024 * 1024*5, maxRequestSize = 1024 * 1024*5*5)
+@WebServlet(urlPatterns = {"/admin/videos",
+        "/admin/video/add", "/admin/video/insert",
+        "/admin/video/edit", "/admin/video/update",
+        "/admin/video/delete"})
+
 public class VideoController extends HttpServlet {
 
         IVideoService videoService = new VideoService();
@@ -49,7 +55,7 @@ public class VideoController extends HttpServlet {
             req.setAttribute("category", cate);
             Video vid = videoService.findById(videoid);
             req.setAttribute("vId",vid);
-            req.getRequestDispatcher("/views/admin/video_edit.jsp").forward(req, resp);
+            req.getRequestDispatcher("/views/admin/video_update.jsp").forward(req, resp);
         } else if (url.contains("delete")){
             String id = req.getParameter("id");
             Video video = videoService.findById(id);
